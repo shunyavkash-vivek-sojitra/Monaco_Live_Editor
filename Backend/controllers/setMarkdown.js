@@ -2,19 +2,20 @@ const Markdown = require("../models/MarkdownModel");
 
 const setMarkdown = async (req, res) => {
   try {
-    const markdownId = "67d1799e3ef47ed55cfd5849";
     const { markdown } = req.body;
+    const fixedId = "markdownDocument"; // Fixed ID for the markdown entry
 
-    const updatedMarkdown = await Markdown.findByIdAndUpdate(
-      markdownId,
-      { content: markdown },
-      { new: true, upsert: true }
+    // Find and update the markdown document or create a new one
+    const updatedMarkdown = await Markdown.findOneAndUpdate(
+      { _id: fixedId },
+      { markdown },
+      { upsert: true, new: true }
     );
 
-    res.json({ success: true, markdown: updatedMarkdown.content });
+    res.status(200).json({ success: true, markdown: updatedMarkdown.markdown });
   } catch (error) {
-    console.error("Error saving Markdown:", error);
-    res.status(500).json({ error: "Server error" });
+    console.error("Error saving markdown:", error);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 };
 

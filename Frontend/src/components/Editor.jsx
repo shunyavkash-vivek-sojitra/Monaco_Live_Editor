@@ -7,21 +7,18 @@ import remarkEmoji from "remark-emoji";
 import "../assets/styles/Editor.css";
 
 const CodeEditor = () => {
-  // States the selected language
   const [language, setLanguage] = useState("html");
 
-  // Store individual values of the selected option
   const [htmlCode, setHtmlCode] = useState("<h1>Hello, World!</h1>");
   const [cssCode, setCssCode] = useState(
     "body { background-color: #ebebeb; color: #50383c; }"
   );
   const [jsCode, setJsCode] = useState("console.log('Hello, World!');");
-  const [markdownCode, setMarkdownCode] = useState("* No Content Found!");
+  const [markdownCode, setMarkdownCode] = useState("# Loading...");
 
-  // Store live preview content
   const [previewContent, setPreviewContent] = useState("");
 
-  // Fetch Markdown when the component loads
+  // Fetch Markdown when component loads
   const fetchMarkdown = async () => {
     try {
       const response = await axios.get("http://localhost:5000/getMarkdown");
@@ -35,7 +32,6 @@ const CodeEditor = () => {
     fetchMarkdown();
   }, []);
 
-  // Get code for selected language
   const getCode = () => {
     if (language === "html") return htmlCode;
     if (language === "css") return cssCode;
@@ -43,7 +39,6 @@ const CodeEditor = () => {
     if (language === "markdown") return markdownCode;
   };
 
-  // Set code for selected language
   const setCode = (value) => {
     if (language === "html") setHtmlCode(value);
     if (language === "css") setCssCode(value);
@@ -51,7 +46,6 @@ const CodeEditor = () => {
     if (language === "markdown") setMarkdownCode(value);
   };
 
-  // Live Preview
   useEffect(() => {
     if (language === "markdown") {
       setPreviewContent(markdownCode);
@@ -65,7 +59,6 @@ const CodeEditor = () => {
     }
   }, [htmlCode, cssCode, jsCode, markdownCode, language]);
 
-  // Save Markdown Content to Database
   const handleSaveMarkdown = async () => {
     try {
       const response = await axios.post("http://localhost:5000/saveMarkdown", {
@@ -77,64 +70,15 @@ const CodeEditor = () => {
       } else {
         alert("❌ Error: " + response.data.error);
       }
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       alert("❌ Failed to connect to the server.");
     }
   };
 
-  // Open preview in new tab
-  const handlePreviewInNewTab = () => {
-    const newWindow = window.open("", "_blank");
-    newWindow.document.open();
-
-    if (language === "markdown") {
-      newWindow.document.write(`
-      <html>
-        <head>
-          <title>Live Markdown Preview</title>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-        </head>
-        <body>
-          <div id="root"></div>
-          <script type="module">
-            import React from "https://esm.sh/react";
-            import { createRoot } from "https://esm.sh/react-dom/client";
-            import ReactMarkdown from "https://esm.sh/react-markdown";
-            import remarkGfm from "https://esm.sh/remark-gfm";
-            import remarkEmoji from "https://esm.sh/remark-emoji";
-
-            const markdownContent = ${JSON.stringify(markdownCode)};
-
-            const App = () => (
-              React.createElement("div", { className: "markdown-preview" },
-                React.createElement(ReactMarkdown, { children: markdownContent, remarkPlugins: [remarkGfm, remarkEmoji] })
-              )
-            );
-
-            createRoot(document.getElementById("root")).render(React.createElement(App));
-          </script>
-        </body>
-      </html>
-    `);
-    } else {
-      newWindow.document.write(`
-      <html>
-        <head>
-          <title>Live Preview</title>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-          <style>${cssCode}</style>
-        </head>
-        <body>
-          ${htmlCode}
-          <script>${jsCode}</script>
-        </body>
-      </html>
-    `);
-    }
-
+  const openPreviewInNewTab = () => {
+    const newWindow = window.open();
+    newWindow.document.write(previewContent);
     newWindow.document.close();
   };
 
@@ -154,13 +98,14 @@ const CodeEditor = () => {
             <option value="javascript">JavaScript</option>
             <option value="markdown">Markdown</option>
           </select>
-          <button className="preview-btn" onClick={handlePreviewInNewTab}>
+
+          {/* ✅ "Preview in New Tab" button placed beside the select box */}
+          <button className="preview-btn" onClick={openPreviewInNewTab}>
             Preview in New Tab
           </button>
         </div>
       </div>
 
-      {/* Monaco Code Editor */}
       <Editor
         height="400px"
         language={language === "markdown" ? "markdown" : language}
@@ -170,7 +115,6 @@ const CodeEditor = () => {
         options={{ fontSize: 16, minimap: { enabled: true } }}
       />
 
-      {/* Markdown Preview */}
       <div className="preview-container">
         <div className="preview-header-wrap">
           <div className="preview-header">

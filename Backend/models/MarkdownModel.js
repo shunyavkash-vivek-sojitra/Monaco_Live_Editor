@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
-const markdownSchema = new mongoose.Schema({
-  content: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
+const MarkdownSchema = new mongoose.Schema({
+  _id: { type: String, default: "markdownDocument" },
+  markdown: { type: String, required: true },
 });
 
-module.exports = mongoose.model("Markdown", markdownSchema);
+module.exports = mongoose.model("Markdown", MarkdownSchema);

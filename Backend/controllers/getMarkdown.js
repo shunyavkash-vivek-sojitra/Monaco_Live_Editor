@@ -2,21 +2,18 @@ const Markdown = require("../models/MarkdownModel");
 
 const getMarkdown = async (req, res) => {
   try {
-    const markdownId = "67d1799e3ef47ed55cfd5849";
-    let markdownData = await Markdown.findById(markdownId);
+    const fixedId = "markdownDocument"; // Fixed ID
 
-    if (!markdownData) {
-      // If no data exists, create a new one
-      markdownData = await Markdown.create({
-        _id: markdownId,
-        content: "# Welcome to Live Editor!",
-      });
+    const markdownEntry = await Markdown.findById(fixedId);
+
+    if (!markdownEntry) {
+      return res.status(200).json({ markdown: "# No content available." });
     }
 
-    res.json({ markdown: markdownData.content });
+    res.status(200).json({ markdown: markdownEntry.markdown });
   } catch (error) {
-    console.error("Error retrieving Markdown:", error);
-    res.status(500).json({ error: "Server error" });
+    console.error("Error fetching markdown:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
