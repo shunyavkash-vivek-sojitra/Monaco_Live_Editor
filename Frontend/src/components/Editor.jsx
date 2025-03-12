@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Editor from "@monaco-editor/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -15,10 +16,24 @@ const CodeEditor = () => {
     "body { background-color: #ebebeb; color: #50383c; }"
   );
   const [jsCode, setJsCode] = useState("console.log('Hello, World!');");
-  const [markdownCode, setMarkdownCode] = useState("# Hello, Markdown!");
+  const [markdownCode, setMarkdownCode] = useState("* No Content Found!");
 
   // Store live preview content
   const [previewContent, setPreviewContent] = useState("");
+
+  // Fetch Markdown when the component loads
+  const fetchMarkdown = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/getMarkdown");
+      setMarkdownCode(response.data.markdown || "# No content available.");
+    } catch (error) {
+      console.error("Error fetching markdown:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMarkdown();
+  }, []);
 
   // Get code for selected language
   const getCode = () => {
@@ -36,7 +51,7 @@ const CodeEditor = () => {
     if (language === "markdown") setMarkdownCode(value);
   };
 
-  // Live Preview [ effect - on code(values) change ]
+  // Live Preview
   useEffect(() => {
     if (language === "markdown") {
       setPreviewContent(markdownCode);
@@ -53,19 +68,14 @@ const CodeEditor = () => {
   // Save Markdown Content to Database
   const handleSaveMarkdown = async () => {
     try {
-      const response = await fetch("http://localhost:5000/saveMarkdown", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ markdown: markdownCode }),
+      const response = await axios.post("http://localhost:5000/saveMarkdown", {
+        markdown: markdownCode,
       });
 
-      const data = await response.json();
-      if (response.ok) {
+      if (response.status === 200) {
         alert("✅ Markdown saved successfully!");
       } else {
-        alert("❌ Error: " + data.error);
+        alert("❌ Error: " + response.data.error);
       }
       // eslint-disable-next-line no-unused-vars
     } catch (error) {
@@ -75,23 +85,16 @@ const CodeEditor = () => {
 
   // Open preview in new tab
   const handlePreviewInNewTab = () => {
-    // Open new tab
     const newWindow = window.open("", "_blank");
-    // Open document in new tab
     newWindow.document.open();
 
-    // Markdown Preview
     if (language === "markdown") {
-      // Write in document in new tab
       newWindow.document.write(`
       <html>
         <head>
           <title>Live Markdown Preview</title>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1">
-          <style>
-            ${document.querySelector("style")?.innerHTML || ""}
-          </style>
         </head>
         <body>
           <div id="root"></div>
@@ -102,7 +105,6 @@ const CodeEditor = () => {
             import remarkGfm from "https://esm.sh/remark-gfm";
             import remarkEmoji from "https://esm.sh/remark-emoji";
 
-            // convert plain text to string
             const markdownContent = ${JSON.stringify(markdownCode)};
 
             const App = () => (
@@ -117,7 +119,6 @@ const CodeEditor = () => {
       </html>
     `);
     } else {
-      // HTML, CSS, JS Preview
       newWindow.document.write(`
       <html>
         <head>
@@ -134,7 +135,6 @@ const CodeEditor = () => {
     `);
     }
 
-    // done writing in document 
     newWindow.document.close();
   };
 
@@ -145,7 +145,6 @@ const CodeEditor = () => {
           Live Code Editor <span className="languageSelected">{language}</span>
         </h2>
         <div className="editor-controls">
-          {/* Allow selecting language or markdown */}
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
@@ -176,7 +175,6 @@ const CodeEditor = () => {
         <div className="preview-header-wrap">
           <div className="preview-header">
             <h3>Live Preview</h3>
-            {/* Visible "Save" button only when Markdown is selected */}
             {language === "markdown" && (
               <button className="save-btn" onClick={handleSaveMarkdown}>
                 Save
