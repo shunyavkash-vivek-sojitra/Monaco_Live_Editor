@@ -23,7 +23,7 @@ const CodeEditor = () => {
   const fetchMarkdown = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/markdown/getMarkdown"
+        "https://monaco-live-editor.onrender.com/api/markdown/getMarkdown"
       );
       setMarkdownCode(response.data.markdown || "# No content available.");
     } catch (error) {
@@ -65,7 +65,7 @@ const CodeEditor = () => {
   const handleSaveMarkdown = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/markdown/saveMarkdown",
+        "https://monaco-live-editor.onrender.com/api/markdown/saveMarkdown",
         {
           markdown: markdownCode,
         }
