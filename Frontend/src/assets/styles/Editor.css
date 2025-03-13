@@ -22,6 +22,7 @@ a {
   cursor: pointer;
   /* display: none; */
   width: 8px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -89,6 +90,72 @@ a {
   background-color: #444;
 }
 
+/* Preview button */
+.preview-btn {
+  background: linear-gradient(
+    270deg,
+    hsla(250, 26%, 44%, 1) 0%,
+    hsla(327, 43%, 79%, 1) 100%
+  );
+  background-size: 100% 100%;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 6px;
+  transition: all 0.4s ease;
+}
+
+.preview-btn:hover {
+  background-size: 400% 100%;
+  background-position: right center;
+}
+
+/* On-Page Live Preview */
+.preview-container {
+  position: relative;
+  margin: 16px 0;
+  height: 600px;
+  padding-right: 6px;
+  padding-left: 14px;
+  background: #222;
+  border-radius: 8px;
+  overflow-x: hidden;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Header inside the preview container */
+.preview-header-wrap {
+  width: 100%;
+  position: sticky;
+  top: 0;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 10px 15px;
+  background: #333;
+}
+
+.save-btn {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+.save-btn:hover {
+  background: #45a049;
+}
+
 /* Markdown Toolbar */
 .markdown-toolbar {
   display: flex;
@@ -112,6 +179,7 @@ a {
 
 /* Markdown Preview */
 .markdown-preview {
+  overflow: auto;
   padding: 20px;
   background: #fff;
   border-radius: 8px;
@@ -145,11 +213,22 @@ a {
 }
 
 .markdown-preview :is(h1, h2, h3, h4, h5, h6, p, hr) {
+  word-wrap: break-word;
   margin: 6px 0;
 }
 
+.markdown-preview pre {
+  max-width: 100%;
+  background: #ddd;
+  color: #fff;
+  padding: 8px;
+  border-radius: 8px;
+}
+
 .markdown-preview code {
+  width: 100%;
   display: block;
+  overflow: auto;
   background: rgba(244, 244, 244);
   padding: 6px 8px;
   border-radius: 4px;
@@ -161,22 +240,17 @@ a {
   display: inline;
 }
 
-.markdown-preview pre {
-  background: #ddd;
-  color: #fff;
-  padding: 8px;
-  border-radius: 8px;
-  overflow-x: auto;
-}
-
 /* Task Lists */
 .markdown-preview input[type="checkbox"] {
   margin-right: 8px;
 }
 
-/* Markdown Table Styling */
+/* Wrap table in a scrollable container */
 .markdown-preview table {
-  width: 100%;
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+  white-space: nowrap;
   border-collapse: collapse;
   margin: 10px 0;
   font-size: 16px;
@@ -202,72 +276,6 @@ a {
 
 .markdown-preview tr:hover {
   background: #f1f1f1;
-}
-
-/* Preview button */
-.preview-btn {
-  background: linear-gradient(
-    270deg,
-    hsla(250, 26%, 44%, 1) 0%,
-    hsla(327, 43%, 79%, 1) 100%
-  );
-  background-size: 100% 100%;
-  color: white;
-  border: none;
-  padding: 10px 18px;
-  font-size: 14px;
-  font-weight: bold;
-  border-radius: 6px;
-  transition: all 0.4s ease;
-}
-
-.preview-btn:hover {
-  background-size: 400% 100%;
-  background-position: right center;
-}
-
-/* On-Page Live Preview */
-.preview-container {
-  position: relative;
-  margin: 16px 0;
-  height: 600px;
-  padding-right: 6px;
-  padding-left: 14px;
-  background: #222;
-  border-radius: 8px;
-  overflow: auto;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* Header inside the preview container */
-.preview-header-wrap {
-  width: 100%;
-  position: sticky;
-  top: 0;
-}
-
-.preview-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  padding: 10px 15px;
-  background: #333;
-}
-
-.save-btn {
-  background: #4caf50;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  font-size: 14px;
-  font-weight: bold;
-  border-radius: 6px;
-  transition: 0.3s;
-}
-
-.save-btn:hover {
-  background: #45a049;
 }
 
 /* Live Preview Iframe */
