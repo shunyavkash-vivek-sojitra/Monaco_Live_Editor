@@ -6,7 +6,7 @@ const setMarkdownRoutes = require("./setMarkdownRoute");
 const getMarkdownRoutes = require("./getMarkdownRoute");
 
 // Use the routes
-router.use("/", setMarkdownRoutes);
-router.use("/", getMarkdownRoutes);
+router.use("/markdown", setMarkdownRoutes);
+router.use("/markdown", getMarkdownRoutes);
 
 module.exports = router;

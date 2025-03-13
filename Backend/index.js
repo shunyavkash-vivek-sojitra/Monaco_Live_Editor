@@ -15,7 +15,7 @@ app.use(cors());
 connectDB();
 
 // Routes
-app.use("/", routes);
+app.use("/api", routes);
 
 // Start Server
 app.listen(PORT, () =>

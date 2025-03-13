@@ -22,7 +22,9 @@ const CodeEditor = () => {
   // Fetch Markdown when component loads
   const fetchMarkdown = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/getMarkdown");
+      const response = await axios.get(
+        "http://localhost:5000/api/markdown/getMarkdown"
+      );
       setMarkdownCode(response.data.markdown || "# No content available.");
     } catch (error) {
       console.error("Error fetching markdown:", error);
@@ -62,9 +64,12 @@ const CodeEditor = () => {
 
   const handleSaveMarkdown = async () => {
     try {
-      const response = await axios.post("http://localhost:5000/saveMarkdown", {
-        markdown: markdownCode,
-      });
+      const response = await axios.post(
+        "http://localhost:5000/api/markdown/saveMarkdown",
+        {
+          markdown: markdownCode,
+        }
+      );
 
       if (response.status === 200) {
         alert("✅ Markdown saved successfully!");
