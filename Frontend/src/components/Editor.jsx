@@ -4,6 +4,7 @@ import Editor from "@monaco-editor/react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkEmoji from "remark-emoji";
+import DOMPurify from "dompurify";
 import "../assets/styles/Editor.css";
 
 const CodeEditor = () => {
@@ -78,66 +79,67 @@ const CodeEditor = () => {
 
   // Open preview in new tab
   const openPreviewInNewTab = () => {
-    // Open new tab
     const newWindow = window.open("", "_blank");
-    // Open document in new tab
     newWindow.document.open();
 
     // Markdown Preview
     if (language === "markdown") {
-      // Write in document in new tab
+      const sanitizedMarkdown = DOMPurify.sanitize(markdownCode);
+
       newWindow.document.write(`
-       <html>
-         <head>
-           <title>Live Markdown Preview</title>
-           <meta charset="UTF-8">
-           <meta name="viewport" content="width=device-width, initial-scale=1">
-           <style>
-             ${document.querySelector("style")?.innerHTML || ""}
-           </style>
-         </head>
-         <body>
-           <div id="root"></div>
-           <script type="module">
-             import React from "https://esm.sh/react";
-             import { createRoot } from "https://esm.sh/react-dom/client";
-             import ReactMarkdown from "https://esm.sh/react-markdown";
-             import remarkGfm from "https://esm.sh/remark-gfm";
-             import remarkEmoji from "https://esm.sh/remark-emoji";
- 
-             // convert plain text to string
-             const markdownContent = ${JSON.stringify(markdownCode)};
- 
-             const App = () => (
-               React.createElement("div", { className: "markdown-preview" },
-                 React.createElement(ReactMarkdown, { children: markdownContent, remarkPlugins: [remarkGfm, remarkEmoji] })
-               )
-             );
- 
-             createRoot(document.getElementById("root")).render(React.createElement(App));
-           </script>
-         </body>
-       </html>
-     `);
+      <html>
+        <head>
+          <title>Live Markdown Preview</title>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <style>
+            ${document.querySelector("style")?.innerHTML || ""}
+          </style>
+        </head>
+        <body>
+          <div id="root"></div>
+          <script type="module">
+            import React from "https://esm.sh/react";
+            import { createRoot } from "https://esm.sh/react-dom/client";
+            import ReactMarkdown from "https://esm.sh/react-markdown";
+            import remarkGfm from "https://esm.sh/remark-gfm";
+            import remarkEmoji from "https://esm.sh/remark-emoji";
+
+            const markdownContent = ${JSON.stringify(sanitizedMarkdown)};
+
+            const App = () => (
+              React.createElement("div", { className: "markdown-preview" },
+                React.createElement(ReactMarkdown, { children: markdownContent, remarkPlugins: [remarkGfm, remarkEmoji] })
+              )
+            );
+
+            createRoot(document.getElementById("root")).render(React.createElement(App));
+          </script>
+        </body>
+      </html>
+    `);
     } else {
       // HTML, CSS, JS Preview
+      const sanitizedHtml = DOMPurify.sanitize(htmlCode);
+      const sanitizedCss = DOMPurify.sanitize(cssCode);
+      const sanitizedJs = DOMPurify.sanitize(jsCode);
+
       newWindow.document.write(`
-       <html>
-         <head>
-           <title>Live Preview</title>
-           <meta charset="UTF-8">
-           <meta name="viewport" content="width=device-width, initial-scale=1">
-           <style>${cssCode}</style>
-         </head>
-         <body>
-           ${htmlCode}
-           <script>${jsCode}</script>
-         </body>
-       </html>
-     `);
+      <html>
+        <head>
+          <title>Live Preview</title>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <style>${sanitizedCss}</style>
+        </head>
+        <body>
+          ${sanitizedHtml}
+          <script>${sanitizedJs}</script>
+        </body>
+      </html>
+    `);
     }
 
-    // done writing in document
     newWindow.document.close();
   };
 
@@ -189,14 +191,16 @@ const CodeEditor = () => {
         {language === "markdown" ? (
           <div className="markdown-preview">
             <ReactMarkdown
-              children={previewContent}
+              children={DOMPurify.sanitize(previewContent)}
               remarkPlugins={[remarkGfm, remarkEmoji]}
             />
           </div>
         ) : (
           <iframe
             title="Live Preview"
-            srcDoc={previewContent}
+            srcDoc={DOMPurify.sanitize(previewContent, {
+              ADD_TAGS: ["script"],
+            })}
             className="preview-frame"
           />
         )}
