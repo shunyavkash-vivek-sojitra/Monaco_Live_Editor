@@ -11,7 +11,10 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://shunyavkash-vivek-sojitra.github.io/Monaco_Live_Editor/",
+    origin: [
+      "https://shunyavkash-vivek-sojitra.github.io",
+      "https://shunyavkash-vivek-sojitra.github.io/Monaco_Live_Editor/",
+    ],
     methods: ["GET", "POST"],
     credentials: true,
   })
