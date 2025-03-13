@@ -70,15 +70,74 @@ const CodeEditor = () => {
       } else {
         alert("❌ Error: " + response.data.error);
       }
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       alert("❌ Failed to connect to the server.");
     }
   };
 
+  // Open preview in new tab
   const openPreviewInNewTab = () => {
-    const newWindow = window.open();
-    newWindow.document.write(previewContent);
+    // Open new tab
+    const newWindow = window.open("", "_blank");
+    // Open document in new tab
+    newWindow.document.open();
+
+    // Markdown Preview
+    if (language === "markdown") {
+      // Write in document in new tab
+      newWindow.document.write(`
+       <html>
+         <head>
+           <title>Live Markdown Preview</title>
+           <meta charset="UTF-8">
+           <meta name="viewport" content="width=device-width, initial-scale=1">
+           <style>
+             ${document.querySelector("style")?.innerHTML || ""}
+           </style>
+         </head>
+         <body>
+           <div id="root"></div>
+           <script type="module">
+             import React from "https://esm.sh/react";
+             import { createRoot } from "https://esm.sh/react-dom/client";
+             import ReactMarkdown from "https://esm.sh/react-markdown";
+             import remarkGfm from "https://esm.sh/remark-gfm";
+             import remarkEmoji from "https://esm.sh/remark-emoji";
+ 
+             // convert plain text to string
+             const markdownContent = ${JSON.stringify(markdownCode)};
+ 
+             const App = () => (
+               React.createElement("div", { className: "markdown-preview" },
+                 React.createElement(ReactMarkdown, { children: markdownContent, remarkPlugins: [remarkGfm, remarkEmoji] })
+               )
+             );
+ 
+             createRoot(document.getElementById("root")).render(React.createElement(App));
+           </script>
+         </body>
+       </html>
+     `);
+    } else {
+      // HTML, CSS, JS Preview
+      newWindow.document.write(`
+       <html>
+         <head>
+           <title>Live Preview</title>
+           <meta charset="UTF-8">
+           <meta name="viewport" content="width=device-width, initial-scale=1">
+           <style>${cssCode}</style>
+         </head>
+         <body>
+           ${htmlCode}
+           <script>${jsCode}</script>
+         </body>
+       </html>
+     `);
+    }
+
+    // done writing in document
     newWindow.document.close();
   };
 
