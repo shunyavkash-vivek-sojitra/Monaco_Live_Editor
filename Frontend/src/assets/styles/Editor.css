@@ -18,6 +18,19 @@ a {
   cursor: pointer;
 }
 
+::-webkit-scrollbar {
+  cursor: pointer;
+  /* display: none; */
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(93, 83, 141);
+  border-radius: 3px;
+}
+
 /* Editor wrapper */
 .codeEditorWrap {
   margin: 20px;
@@ -218,6 +231,8 @@ a {
   position: relative;
   margin: 16px 0;
   height: 600px;
+  padding-right: 6px;
+  padding-left: 14px;
   background: #222;
   border-radius: 8px;
   overflow: auto;
